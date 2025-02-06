@@ -29,7 +29,9 @@ ExpResetMcl2::ExpResetMcl2(const Pose &p, int num, const Scan &scan,
 ExpResetMcl2::~ExpResetMcl2()
 {
 }
-
+void ExpResetMcl2::updateNumParticles(int num_particles) { //addd
+    num_particles_ = num_particles;
+}
 void ExpResetMcl2::sensorUpdate(double lidar_x, double lidar_y, double lidar_t, bool inv)
 {
 	if(processed_seq_ == scan_.seq_)

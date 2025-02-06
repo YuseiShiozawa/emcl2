@@ -19,13 +19,13 @@ public:
 			double extraction_rate, double successive_penetration_threshold,
 			bool sensor_reset);
 	~ExpResetMcl2();
-
+    void updateNumParticles(int num_particles); //adddd
 	void sensorUpdate(double lidar_x, double lidar_y, double lidar_t, bool inv);
 private:
 	double alpha_threshold_;
 	double expansion_radius_position_;
 	double expansion_radius_orientation_;
-
+    int num_particles_;  // ここで宣言
 	double extraction_rate_;
 	double range_threshold_;
 	bool sensor_reset_;

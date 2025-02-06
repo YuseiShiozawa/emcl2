@@ -15,6 +15,7 @@
 #include <sensor_msgs/LaserScan.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <std_srvs/Empty.h>
+#include <emcl2/emcl2Config.h>  // 追加: dynamic_reconfigure のヘッダー
 
 
 namespace emcl2 {
@@ -24,7 +25,9 @@ class EMcl2Node
 public:
 	EMcl2Node();
 	~EMcl2Node();
-
+    //void EMcl2Node::callback(emcl2::emcl2Config &config, uint32_t level); //add
+	void callback(emcl2::emcl2Config &config, uint32_t level); // 追加
+	
 	void loop(void);
 	int getOdomFreq(void);
 private:
@@ -55,6 +58,7 @@ private:
 	tf2::Transform latest_tf_;
 
 	int odom_freq_;
+    int num_particles_; //addd
 	bool init_request_;
 	bool simple_reset_request_;
 	double init_x_, init_y_, init_t_;
@@ -72,7 +76,7 @@ private:
 	void initPF(void);
 	std::shared_ptr<LikelihoodFieldMap> initMap(void);
 	std::shared_ptr<OdomModel> initOdometry(void);
-
+    //void EMcl2Node::callback(emcl2::emcl2Config &config, uint32_t level); //add
 	void cbScan(const sensor_msgs::LaserScan::ConstPtr &msg);
 	bool cbSimpleReset(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res);
 	void initialPoseReceived(const geometry_msgs::PoseWithCovarianceStampedConstPtr& msg);

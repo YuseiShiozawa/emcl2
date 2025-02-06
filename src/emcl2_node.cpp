@@ -28,8 +28,9 @@ EMcl2Node::~EMcl2Node()
 {
 }
 
-void callback(emcl2::emcl2Config &config, uint32_t level) {
-}
+/*void callback(emcl2::emcl2Config &config, uint32_t level) {
+    num_particles = config.num_particles;
+}*/
 
 void EMcl2Node::initCommunication(void)
 {
@@ -50,6 +51,9 @@ void EMcl2Node::initCommunication(void)
 	tf_.reset(new tf2_ros::Buffer());
 	tfl_.reset(new tf2_ros::TransformListener(*tf_));
 }
+/*void callback(emcl2::emcl2Config &config, uint32_t level) { //add
+    num_particles_ = config.num_particles;
+}*/
 
 void EMcl2Node::initPF(void)
 {
@@ -66,10 +70,13 @@ void EMcl2Node::initPF(void)
 	private_nh_.param("initial_pose_y", init_pose.y_, 0.0);
 	private_nh_.param("initial_pose_a", init_pose.t_, 0.0);
 
-	int num_particles;
+	//int num_particles;
+	/*void callback(emcl2::emcl2Config &config, uint32_t level) {
+    num_particles = config.num_particles;
+}*/
 	double alpha_th;
 	double ex_rad_pos, ex_rad_ori;
-	private_nh_.param("num_particles", num_particles, 0);
+	private_nh_.param("num_particles", num_particles_, 0); //modify
 	private_nh_.param("alpha_threshold", alpha_th, 0.5);
 	private_nh_.param("expansion_radius_position", ex_rad_pos, 0.1);
 	private_nh_.param("expansion_radius_orientation", ex_rad_ori, 0.2);
@@ -80,11 +87,15 @@ void EMcl2Node::initPF(void)
 	private_nh_.param("range_threshold", range_threshold, 0.1);
 	private_nh_.param("sensor_reset", sensor_reset, false);
 
-	pf_.reset(new ExpResetMcl2(init_pose, num_particles, scan, om, map,
+	pf_.reset(new ExpResetMcl2(init_pose, num_particles_, scan, om, map,
 				alpha_th, ex_rad_pos, ex_rad_ori,
 				extraction_rate, range_threshold, sensor_reset));
 }
-
+void EMcl2Node::callback(emcl2::emcl2Config &config, uint32_t level) {//add
+    this->num_particles_ = config.num_particles;
+	ROS_INFO("hoge");
+    pf_->updateNumParticles(num_particles_);  // パーティクル数だけ更新     
+}
 std::shared_ptr<OdomModel> EMcl2Node::initOdometry(void)
 {
 	double ff, fr, rf, rr;
@@ -101,7 +112,7 @@ std::shared_ptr<LikelihoodFieldMap> EMcl2Node::initMap(void)
 	private_nh_.param("laser_likelihood_max_dist", likelihood_range, 0.2);
 
 	int num;
-	private_nh_.param("num_particles", num, 0);
+	private_nh_.param("num_particles", num, 0); //modify2
 
 	nav_msgs::GetMap::Request req;
 	nav_msgs::GetMap::Response resp;
@@ -324,6 +335,7 @@ int main(int argc, char **argv)
 
     dynamic_reconfigure::Server<emcl2::emcl2Config> server;
     dynamic_reconfigure::Server<emcl2::emcl2Config>::CallbackType f;
+	f = boost::bind(&emcl2::EMcl2Node::callback, &node, _1, _2);
     server.setCallback(f);
 	ros::Rate loop_rate(node.getOdomFreq());
 	while (ros::ok()){
