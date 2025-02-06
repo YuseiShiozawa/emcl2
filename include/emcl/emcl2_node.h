@@ -16,6 +16,7 @@
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <std_srvs/Empty.h>
 
+
 namespace emcl2 {
 
 class EMcl2Node

@@ -9,7 +9,8 @@
 #include <geometry_msgs/PoseArray.h>
 #include <nav_msgs/GetMap.h>
 #include <std_msgs/Float32.h>
-
+#include <dynamic_reconfigure/server.h>
+#include <emcl2/emcl2Config.h>
 namespace emcl2 {
 
 EMcl2Node::EMcl2Node() : private_nh_("~")
@@ -25,6 +26,9 @@ EMcl2Node::EMcl2Node() : private_nh_("~")
 
 EMcl2Node::~EMcl2Node()
 {
+}
+
+void callback(emcl2::emcl2Config &config, uint32_t level) {
 }
 
 void EMcl2Node::initCommunication(void)
@@ -318,6 +322,9 @@ int main(int argc, char **argv)
 	ros::init(argc, argv, "emcl2_node");
 	emcl2::EMcl2Node node;
 
+    dynamic_reconfigure::Server<emcl2::emcl2Config> server;
+    dynamic_reconfigure::Server<emcl2::emcl2Config>::CallbackType f;
+    server.setCallback(f);
 	ros::Rate loop_rate(node.getOdomFreq());
 	while (ros::ok()){
 		node.loop();
@@ -329,4 +336,3 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-
