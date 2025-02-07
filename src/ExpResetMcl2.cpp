@@ -26,6 +26,26 @@ ExpResetMcl2::ExpResetMcl2(const Pose &p, int num, const Scan &scan,
 {
 }
 
+//add
+ExpResetMcl22::ExpResetMcl22(int num, const Scan &scan,
+				const std::shared_ptr<OdomModel> &odom_model,
+				const std::shared_ptr<LikelihoodFieldMap> &map,
+				double alpha_th,
+				double expansion_radius_position, double expansion_radius_orientation,
+				double extraction_rate, double range_threshold, bool sensor_reset)
+	: alpha_threshold_(alpha_th),
+	  expansion_radius_position_(expansion_radius_position),
+	  expansion_radius_orientation_(expansion_radius_orientation),
+	  extraction_rate_(extraction_rate),
+	  range_threshold_(range_threshold),
+	  sensor_reset_(sensor_reset),
+	  Mcl::Mcl(Pose(), num, scan, odom_model, map) // デフォルトコンストラクタの Pose() を渡す
+{
+}
+ExpResetMcl22::~ExpResetMcl22() {
+    // 特に行うことがない場合
+}
+
 ExpResetMcl2::~ExpResetMcl2()
 {
 }

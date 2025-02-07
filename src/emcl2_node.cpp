@@ -94,7 +94,29 @@ void EMcl2Node::initPF(void)
 void EMcl2Node::callback(emcl2::emcl2Config &config, uint32_t level) {//add
     this->num_particles_ = config.num_particles;
 	ROS_INFO("hoge");
-    pf_->updateNumParticles(num_particles_);  // パーティクル数だけ更新     
+	double alpha_th;
+    //pf_->updateNumParticles(num_particles_);  // パーティクル数だけ更新
+	private_nh_.param("num_particles", num_particles_, 0); 
+	std::shared_ptr<LikelihoodFieldMap> map = std::move(initMap());
+	std::shared_ptr<OdomModel> om = std::move(initOdometry());
+	double extraction_rate, range_threshold;
+	bool sensor_reset;
+	private_nh_.param("extraction_rate", extraction_rate, 0.1);
+	private_nh_.param("range_threshold", range_threshold, 0.1);
+	private_nh_.param("sensor_reset", sensor_reset, false);
+	double ex_rad_pos, ex_rad_ori;
+	private_nh_.param("num_particles", num_particles_, 0); //modify
+	private_nh_.param("alpha_threshold", alpha_th, 0.5);
+	private_nh_.param("expansion_radius_position", ex_rad_pos, 0.1);
+	private_nh_.param("expansion_radius_orientation", ex_rad_ori, 0.2);
+	Scan scan;
+	private_nh_.param("laser_min_range", scan.range_min_, 0.0);
+	private_nh_.param("laser_max_range", scan.range_max_, 100000000.0);
+	private_nh_.param("scan_increment", scan.scan_increment_, 1);
+	std::shared_ptr<ExpResetMcl22> pf_;
+	pf_.reset(new ExpResetMcl22(num_particles_, scan, om, map,
+				alpha_th, ex_rad_pos, ex_rad_ori,
+				extraction_rate, range_threshold, sensor_reset));     
 }
 std::shared_ptr<OdomModel> EMcl2Node::initOdometry(void)
 {

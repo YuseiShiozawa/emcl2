@@ -34,6 +34,31 @@ private:
 	double nonPenetrationRate(int skip, LikelihoodFieldMap *map, Scan &scan);
 };
 
+class ExpResetMcl22 : public Mcl //add
+{
+public:
+	ExpResetMcl22(int num, const Scan &scan,
+				const std::shared_ptr<OdomModel> &odom_model,
+				const std::shared_ptr<LikelihoodFieldMap> &map,
+				double alpha_th,
+				double expansion_radius_position, double expansion_radius_orientation,
+				double extraction_rate, double range_threshold, bool sensor_reset);
+	~ExpResetMcl22();
+    void updateNumParticles(int num_particles); //adddd
+	void sensorUpdate(double lidar_x, double lidar_y, double lidar_t, bool inv);
+private:
+	double alpha_threshold_;
+	double expansion_radius_position_;
+	double expansion_radius_orientation_;
+    int num_particles_;  // ここで宣言
+	double extraction_rate_;
+	double range_threshold_;
+	bool sensor_reset_;
+
+	void expansionReset(void);
+	double nonPenetrationRate(int skip, LikelihoodFieldMap *map, Scan &scan);
+};
+
 }
 
 #endif
